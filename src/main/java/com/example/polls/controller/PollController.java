@@ -32,14 +32,29 @@ public class PollController {
         return pollRepository.save(poll);
     }
 
-    @PostMapping("/{pollId}/vote/{choiceId}")
-    public Choice vote(@PathVariable Long pollId, @PathVariable Long choiceId) {
+    @PutMapping("/{pollId}")
+    public Poll updatePoll(@PathVariable Long pollId,
+                           @RequestBody Poll updatedPoll) {
 
-        Choice choice = choiceRepository.findById(choiceId)
-                .orElseThrow(() -> new RuntimeException("Choice not found"));
+        Poll poll = pollRepository.findById(pollId)
+                .orElseThrow(() -> new RuntimeException("Poll not found"));
 
-        choice.setVoteCount(choice.getVoteCount() + 1);
+        poll.setQuestion(updatedPoll.getQuestion());
 
-        return choiceRepository.save(choice);
+        for (int i = 0; i < poll.getOptions().size(); i++) {
+
+            poll.getOptions().get(i)
+                    .setText(updatedPoll.getOptions().get(i).getText());
+        }
+
+        return pollRepository.save(poll);
     }
+
+    @DeleteMapping("/{pollId}")
+    public String deletePoll(@PathVariable Long pollId) {
+        pollRepository.deleteById(pollId);
+        return "Poll deleted successfully";
+    }
+
+
 }
