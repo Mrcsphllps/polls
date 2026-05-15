@@ -50,6 +50,18 @@ public class PollController {
         return pollRepository.save(poll);
     }
 
+    @PostMapping("/{pollId}/vote/{choiceId}")
+    public Choice vote(@PathVariable Long pollId,
+                       @PathVariable Long choiceId) {
+
+        Choice choice = choiceRepository.findById(choiceId)
+                .orElseThrow(() -> new RuntimeException("Choice not found"));
+
+        choice.setVoteCount(choice.getVoteCount() + 1);
+
+        return choiceRepository.save(choice);
+    }
+
     @DeleteMapping("/{pollId}")
     public String deletePoll(@PathVariable Long pollId) {
         pollRepository.deleteById(pollId);
